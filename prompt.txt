@@ -1,0 +1,4 @@
+Repository: gschu1/politicallife-vs
+Issue #6 – retry_yet_again_new_Agent test – add hello.txt
+
+Please create a file hello.txt containing “It works!”.
