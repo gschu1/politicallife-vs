@@ -73,6 +73,9 @@ jobs:
         run: |
           BR="agent/${{ github.event.issue.number }}-${{ github.run_id }}"
           git checkout -b "$BR"
+           # ── add identity ──
+          git config --global user.name  "Mercurius-AI-bot"
+          git config --global user.email "bot@localhost"
           git add .
           git commit -m "Agent output for #${{ github.event.issue.number }}"
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
