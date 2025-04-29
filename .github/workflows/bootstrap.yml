@@ -1,7 +1,4 @@
-# rerun again 2 
-# rerun again
-# rerun
-# trigger rerun
+# rerun again 3
 
 name: CI – bootstrap
 on:
@@ -28,7 +25,7 @@ jobs:
           git add logs/premortems
           git commit -m "CI: add premortem stub" || echo "nothing to commit"
 
-         - name: Push changes with built-in token
-      run: |
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:bootstrap-ci || true
-
+      - name: Push changes with built-in token
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          git push origin HEAD:bootstrap-ci || true
