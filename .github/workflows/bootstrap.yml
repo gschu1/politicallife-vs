@@ -1,0 +1,30 @@
+name: CI – bootstrap
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Git identity
+        run: |
+          git config --global user.name  "${{ vars.BOT_USER || 'Mercurius-AI-PL' }}"
+          git config --global user.email "${{ vars.BOT_EMAIL || 'bot@example.com' }}"
+
+      - name: Create premortem stub
+        run: |
+          mkdir -p logs/premortems
+          echo "# Sprint Premortem – $(date +'%Y-%m-%d')" > logs/premortems/$(date +'%Y-%m-%d').md
+          echo "_First run: file stub created by CI_" >> logs/premortems/$(date +'%Y-%m-%d').md
+          git add logs/premortems
+          git commit -m "CI: add premortem stub" || echo "nothing to commit"
+
+      - name: Push changes
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          git push https://$GH_TOKEN@github.com/${{ github.repository }} HEAD:bootstrap-ci || true
