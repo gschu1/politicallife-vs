@@ -28,8 +28,7 @@ jobs:
           git add logs/premortems
           git commit -m "CI: add premortem stub" || echo "nothing to commit"
 
-      - name: Push changes
-        env:
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
-        run: |
-          git push https://$GH_TOKEN@github.com/${{ github.repository }} HEAD:bootstrap-ci || true
+         - name: Push changes with built-in token
+      run: |
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:bootstrap-ci || true
+
