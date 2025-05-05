@@ -1,12 +1,19 @@
-::Start
-What is your worldview? (Please enter your response)
+:: Reaction
 
-[[Submit -> Speech]]
+(set: $reactions to (shuffle: (list:
+    "The Faction is pleased with your actions!"
+    "The Faction fully supports your decision!"
+    "The Faction is in agreement with your choices!"
+    "The Faction appreciates your efforts!"
+    "The Faction is unhappy with your decision."
+    "The Faction strongly criticizes your actions!"
+    "The Faction does not support your choices."
+    "The Faction disapproves of your efforts."
+)))
 
-::Speech
-<textarea maxLength="60"></textarea>
-[[Continue -> Reaction]]
+(display: (either: (get: $reactions)))
 
-::Reaction
 
-(Faction reaction: supportive / critical)
+:: Start
+
+(Faction reaction: (get: $reactions))

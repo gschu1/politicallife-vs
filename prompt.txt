@@ -1,20 +1,12 @@
 Repository: gschu1/politicallife-vs
-Issue #12 – Retry_Seed reaction prompt set
+Issue #14 – Hook reaction.yaml into hello_world.twee
 
-## Task
+Update `prototype/hello_world.twee` so the ::Reaction passage:
 
-Create `prompts/reaction.yaml` with two categories of faction reactions:
+1. Loads `prompts/reaction.yaml`.
+2. Chooses a random supportive OR critical line and displays it after
+   “Faction reaction: ”.
+3. Still works in the browser with no external server (use SugarCube JS).
 
-```yaml
-supportive:
-  - "Well said! Your words resonate with the people."
-  - "The merchants nod approvingly at your balanced stance."
-  - "You’ve won the hearts of many nobles with that vision."
-  - "Citizens cheer, feeling truly heard."
-
-critical:
-  - "Your speech lacks substance—people whisper doubts."
-  - "Nobles scoff, calling it empty populism."
-  - "Merchants worry your plan ignores economic reality."
-  - "A murmur spreads: 'Same old promises, no action.'"
+Acceptance: Running hello_world ▼ prints one of the eight lines.
 
