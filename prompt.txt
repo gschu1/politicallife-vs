@@ -1,27 +1,16 @@
 Repository: gschu1/politicallife-vs
-Issue #16 – Add deck outline.md
+Issue #18 – Hook reaction.yaml into hello_world.twee
 
 ## Task
 
-Create `deck/outline.md` with these slide headings and bullets:
+Update `prototype/hello_world.twee` so the ::Reaction passage:
 
-1. **Problem**  
-   - Politics is a high‑stakes game, like flying.  
-   - What if there were a “flight simulator” for politicians?  
-   - Many people imagine themselves as politicians and they can play too.  
-
-2. **Solution**  
-   - A narrative game that trains politicians—especially political speech, negotiation and decision‑making.  
-   - AI factions give instant feedback.
-
-3. **Core Loop**  
-   - Player inputs worldview → crafts 60‑word speech → AI reacts.  
-   - Iterate to win over factions.
-
-Save the file; no images yet.
+1. Loads `prompts/reaction.yaml` (SugarCube JS).
+2. Randomly chooses **either** a supportive **or** critical line and
+   displays it after “Faction reaction: ”.
+3. Works entirely in the browser (no external server).
 
 ## Acceptance Criteria
-- `deck/outline.md` exists on **main** after merge.
-- The content matches the bullets above.
-
+- Playing `hello_world.twee` shows one of the eight reaction lines
+  beneath the faction‑reaction label.
 
