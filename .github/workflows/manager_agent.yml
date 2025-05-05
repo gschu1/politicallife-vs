@@ -20,7 +20,7 @@ jobs:
       # 1. Build a prompt out of the issue
       - name: Build prompt
         run: |
-          cat <<EOF > prompt.txt
+          cat <<'EOF' > prompt.txt    # the single quotes are the key
           Repository: ${{ github.repository }}
           Issue #${{ github.event.issue.number }} – ${{ github.event.issue.title }}
 
