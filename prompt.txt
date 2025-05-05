@@ -1,4 +1,25 @@
 Repository: gschu1/politicallife-vs
-Issue #6 – retry_yet_again_new_Agent test – add hello.txt
+Issue #8 – Scaffold folders & agent_playbook.md
 
-Please create a file hello.txt containing “It works!”.
+## Task
+
+1. **Create project skeleton**
+
+   - Ensure these folders exist and contain an empty  file:
+     - 
+     - 
+     - 
+     - 
+
+2. **Add the agent playbook**
+
+   - Create  in the repository root.
+   - Include a top‑level heading **“Agent Playbook”**.
+   - Add a sub‑heading **“Munger‑lens (Pre‑mortem)”** followed by one placeholder paragraph:
+     > _“This section will capture potential failure modes and mitigations.”_
+
+## Acceptance Criteria
+
+- Folders and  files visible in  after merge.
+-  committed with the headings and placeholder text.
+
