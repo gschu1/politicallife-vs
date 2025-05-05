@@ -79,7 +79,7 @@ jobs:
           git add .
           git commit -m "Agent output for #${{ github.event.issue.number }}"
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git push -u origin "$BR"
+          git push https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }} HEAD:$BRANCH
 
       # 5. Open a pull request back to main
       - name: Open pull request
