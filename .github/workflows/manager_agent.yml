@@ -7,8 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  workflows: write
-
+  
 jobs:
   manage:
     if: github.event.issue.state == 'open'
