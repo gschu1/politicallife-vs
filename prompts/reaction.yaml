@@ -1,11 +1,3 @@
-Repository: gschu1/politicallife-vs
-Issue #12 – Retry_Seed reaction prompt set
-
-## Task
-
-Create `prompts/reaction.yaml` with two categories of faction reactions:
-
-```yaml
 supportive:
   - "Well said! Your words resonate with the people."
   - "The merchants nod approvingly at your balanced stance."
@@ -17,4 +9,3 @@ critical:
   - "Nobles scoff, calling it empty populism."
   - "Merchants worry your plan ignores economic reality."
   - "A murmur spreads: 'Same old promises, no action.'"
-
