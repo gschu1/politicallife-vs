@@ -86,15 +86,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BR="agent/${{ github.event.issue.number }}-${{ github.run_id }}"
-          git checkout -b "$BR"
-           # ── add identity ──
-          git config --global user.name  "Mercurius-AI-bot"
-          git config --global user.email "bot@localhost"
-          git add .
-          git commit -m "Agent output for #${{ github.event.issue.number }}"
-          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git push https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }} HEAD:$BRANCH
+          set -e
+          BRANCH="agent/${{ github.run_id }}"
+          git switch -c "$BRANCH"
+
+          # add / commit
+          git config --global user.name  "Mercurius-bot"
+          git config --global user.email "bot@politicallife.ai"
+          git add -A
+          git commit -m "Agent output for #${{ github.event.issue.number }} – ${{ github.run_id }}" || echo "Nothing to commit"
+
+          # always create branch on origin (even if empty commit)      # ← NEW
+          git checkout --orphan tmp && git commit --allow-empty -m init && git push origin tmp && git push origin --delete tmp   # ← NEW
+
+          # push actual branch with PAT
+          git push https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }} HEAD:"$BRANCH"
+
 
       # 5. Open a pull request back to main
       - name: Open pull request
