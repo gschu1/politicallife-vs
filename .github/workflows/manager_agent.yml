@@ -37,34 +37,49 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python - <<'PY'
-          import os, json, pathlib, openai, sys
-          openai.api_key = os.environ["OPENAI_API_KEY"]
+          import os, json, pathlib, sys, textwrap, openai
 
+          # --- 0. Keys & prompt -------------------------------------------------
+          openai.api_key = os.environ["OPENAI_API_KEY"]
           prompt = pathlib.Path("prompt.txt").read_text()
 
+          # --- 1. Ask ChatGPT ---------------------------------------------------
           response = openai.ChatCompletion.create(
               model="gpt-4o-mini",
               messages=[
-                {"role":"system","content":(
-                 "You are an autonomous coding agent. "
-                 "Respond ONLY with valid JSON: an array of objects "
-                 "[{\"path\":\"file\",\"content\":\"...\"}]. "
-                 "No markdown, no prose."
-                )},
-                {"role":"user","content":prompt}
+                  {
+                      "role": "system",
+                      "content": textwrap.dedent("""
+                          You are an autonomous coding agent.
+                          • Respond **ONLY** with valid JSON – an array of objects:
+                            [{"path": "<file>", "content": "<string>"}]
+                          • Do NOT wrap in markdown, prose, or back‑ticks.
+                      """).strip()
+                  },
+                  {"role": "user", "content": prompt}
               ],
               max_tokens=1500
-          )
+          ).choices[0].message.content.strip()
 
-          # Parse response – accept single object or array
-          data = json.loads(response.choices[0].message.content)
-          files = data if isinstance(data, list) else [data]
+          # --- 2. Robust JSON parse --------------------------------------------
+          try:
+              data = json.loads(response)
+          except json.JSONDecodeError as err:
+              sys.stderr.write(f"JSON parse failed: {err}\\n--- Raw model output ---\\n{response}\\n")
+              sys.exit(1)
 
-          for f in files:
-              p = pathlib.Path(f["path"])
-              p.parent.mkdir(parents=True, exist_ok=True)
-              p.write_text(f["content"])
+          if isinstance(data, dict):         # allow single‑object shorthand
+              data = [data]
+
+          # --- 3. Write each file ----------------------------------------------
+          for obj in data:
+              path = pathlib.Path(obj["path"])
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_text(obj["content"])
+
+          print(f"Wrote {len(data)} file(s).")
           PY
+
 
       # 4. Commit the generated files and push a branch
       - name: Commit & push branch
