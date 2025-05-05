@@ -5,113 +5,97 @@ on:
     types: [opened, reopened, edited]
 
 permissions:
-  contents: write
-  pull-requests: write
-  
+  contents: write          # create / update files
+  pull-requests: write     # open PRs
+
 jobs:
   manage:
     if: github.event.issue.state == 'open'
     runs-on: ubuntu-latest
 
     steps:
-      # 0. Check out the repo
-      - uses: actions/checkout@v4
+    # 0 – Check out code
+    -  uses: actions/checkout@v4
 
-      # 1. Build a prompt out of the issue
-      - name: Build prompt
-        run: |
-          cat <<'EOF' > prompt.txt    # the single quotes are the key
-          Repository: ${{ github.repository }}
-          Issue #${{ github.event.issue.number }} – ${{ github.event.issue.title }}
+    # 1 – Build a plain‑text prompt from the Issue
+    -  name: Build prompt
+       run: |
+         cat <<'EOF' > prompt.txt
+         Repository: ${{ github.repository }}
+         Issue #${{ github.event.issue.number }} — ${{ github.event.issue.title }}
 
-          ${{ github.event.issue.body }}
-          EOF
+         ${{ github.event.issue.body }}
+         EOF
 
-      # 2. Install OpenAI client (compatible 0.x version)
-      - name: Install OpenAI client
-        run: python -m pip install --quiet openai==0.28.1
+    # 2 – Install OpenAI client (0.x series, compatible with ChatCompletion)
+    -  name: Install OpenAI client
+       run: python -m pip install --quiet openai==0.28.1
 
-      # 3. Call OpenAI and write files
-      - name: Generate files with OpenAI
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          python - <<'PY'
-          import os, json, pathlib, openai, base64, sys, textwrap
-          
-          # --- 0. Keys & prompt -------------------------------------------------
-          openai.api_key = os.environ["OPENAI_API_KEY"]
-          prompt = pathlib.Path("prompt.txt").read_text()
+    # 3 – Call ChatGPT and write generated files
+    -  name: Generate files with OpenAI
+       env:
+         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+       run: |
+         python - <<'PY'
+         import os, json, base64, pathlib, openai, sys, textwrap
 
-          # --- 1. Ask ChatGPT ---------------------------------------------------
-          response = openai.ChatCompletion.create(
-              model="gpt-4o-mini",
-              messages=[
-                  {
-                      "role": "system",
-                      "content": textwrap.dedent("""
-                          You are an autonomous coding agent.
-                          • Respond **ONLY** with valid JSON – an array of objects:
-                            "[{\"path\":\"file\",\"content_b64\":\"<BASE64>\"}]"
-                          • Do NOT wrap in markdown, prose, or back‑ticks.
-                      """).strip()
-                  },
-                  {"role": "user", "content": prompt}
-              ],
-              max_tokens=1500
-          ).choices[0].message.content.strip()
+         openai.api_key = os.environ["OPENAI_API_KEY"]
+         prompt = pathlib.Path("prompt.txt").read_text()
 
-          # --- 2. Robust JSON parse --------------------------------------------
-          try:
-              data = json.loads(response)
-          except json.JSONDecodeError as err:
-              sys.stderr.write(f"JSON parse failed: {err}\\n--- Raw model output ---\\n{response}\\n")
-              sys.exit(1)
+         response_text = openai.ChatCompletion.create(
+             model="gpt-4o-mini",
+             messages=[
+                 {
+                     "role": "system",
+                     "content": textwrap.dedent("""
+                         You are an autonomous coding agent.
+                         • Respond ONLY with valid JSON: an array of objs
+                           [{"path":"file","content_b64":"<BASE64>"}]
+                         • No markdown or prose.
+                     """).strip()
+                 },
+                 {"role": "user", "content": prompt}
+             ],
+             max_tokens=1500
+         ).choices[0].message.content.strip()
 
-          if isinstance(data, dict):         # allow single‑object shorthand
-              data = [data]
+         # --- robust JSON parse ------------------------------------------
+         try:
+             data = json.loads(response_text)
+         except Exception as e:
+             sys.stderr.write(f"JSON parse failed: {e}\\n--- Raw ---\\n{response_text}\\n")
+             sys.exit(1)
 
-          # --- 3. Write each file ----------------------------------------------
-          for obj in data:
-              path = pathlib.Path(obj["path"])
-              path.parent.mkdir(parents=True, exist_ok=True)
-              decoded = base64.b64decode(f["content_b64"]).decode()
-              p.write_text(decoded)
+         if isinstance(data, dict):   # allow single‑object shorthand
+             data = [data]
 
+         for obj in data:
+             p = pathlib.Path(obj["path"])
+             p.parent.mkdir(parents=True, exist_ok=True)
+             p.write_text(base64.b64decode(obj["content_b64"]).decode())
+         print(f"Wrote {len(data)} file(s)")
+         PY
 
-          print(f"Wrote {len(data)} file(s).")
-          PY
+    # 4 – Commit and push on a temp branch (uses BOT_PAT)
+    -  name: Commit & push branch
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # for PR
+         BOT_PAT:      ${{ secrets.BOT_PAT }}        # classic PAT with repo+workflow
+       run: |
+         BRANCH="agent/${{ github.run_id }}"
+         git checkout -b "$BRANCH"
+         git config --global user.name  "Mercurius‑AI‑bot"
+         git config --global user.email "bot@politicallife.ai"
+         git add .
+         git commit -m "Agent output for #${{ github.event.issue.number }}"
+         git push https://x-access-token:${BOT_PAT}@github.com/${{ github.repository }} HEAD:${BRANCH}
 
-
-      # 4. Commit the generated files and push a branch
-      - name: Commit & push branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          BRANCH="agent/${{ github.run_id }}"
-          git switch -c "$BRANCH"
-
-          # add / commit
-          git config --global user.name  "Mercurius-bot"
-          git config --global user.email "bot@politicallife.ai"
-          git add -A
-          git commit -m "Agent output for #${{ github.event.issue.number }} – ${{ github.run_id }}" || echo "Nothing to commit"
-
-          # always create branch on origin (even if empty commit)      # ← NEW
-          git checkout --orphan tmp && git commit --allow-empty -m init && git push origin tmp && git push origin --delete tmp   # ← NEW
-
-          # push actual branch with PAT
-          git push https://x-access-token:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }} HEAD:"$BRANCH"
-
-
-      # 5. Open a pull request back to main
-      - name: Open pull request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create \
-            --head "$BR" \
-            --base main \
-            --title "Agent PR for #${{ github.event.issue.number }}" \
-            --body  "Automated changes generated by ManagerAgent."
+    # 5 – Open a pull‑request to main
+    -  name: Open pull request
+       uses: peter-evans/create-pull-request@v5
+       with:
+         token:  ${{ secrets.GITHUB_TOKEN }}
+         branch: ${{ env.BRANCH }}
+         commit-message: "Agent PR for #${{ github.event.issue.number }}"
+         title:  "Agent PR for #${{ github.event.issue.number }}"
+         body:   "Automated changes generated by ManagerAgent."
