@@ -1,24 +1,17 @@
 Repository: gschu1/politicallife-vs
-Issue #20 – Add six concept images for deck
+Issue #22 – Add pre‑mortem entry for POC sprint
 
 ## Task
 
-Create the folder `deck/images/` and add **six** PNG placeholders:
+Append to `logs/premortems/$(date +%Y-%m-%d).md` three plausible failure
+modes for the 24‑h POC sprint and one‑line mitigations, e.g.:
 
-deck/images/01_marketplace.png  
-deck/images/02_townhall.png  
-deck/images/03_faction_symbols.png  
-deck/images/04_ui_mock_speech.png  
-deck/images/05_ui_mock_reaction.png  
-deck/images/06_pitch_cover.png  
+- **Scope creep** – keep tasks atomic (1 Issue = 1 PR).
+- **LLM output junk** – run spot checks, merge only reviewed PRs.
+- **Time overruns** – hard‑cut tasks at 90 min and iterate later.
 
-For each image, generate a 1280×720 PNG that simply displays its
-filename as large centered text on a neutral background (solid color or
-soft gradient). This keeps the repo lightweight while reserving slots
-for real concept art later.
+If the file doesn’t exist, create it.
 
 ## Acceptance Criteria
-- All six `.png` files exist on **main** after merge.  
-- Each file opens and shows the correct filename text.  
-- No additional binary files or bloat added.
+- New dated Markdown file exists (or appended) with 3 bullet points.
 
