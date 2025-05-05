@@ -1,16 +1,24 @@
 Repository: gschu1/politicallife-vs
-Issue #18 – Hook reaction.yaml into hello_world.twee
+Issue #20 – Add six concept images for deck
 
 ## Task
 
-Update `prototype/hello_world.twee` so the ::Reaction passage:
+Create the folder `deck/images/` and add **six** PNG placeholders:
 
-1. Loads `prompts/reaction.yaml` (SugarCube JS).
-2. Randomly chooses **either** a supportive **or** critical line and
-   displays it after “Faction reaction: ”.
-3. Works entirely in the browser (no external server).
+deck/images/01_marketplace.png  
+deck/images/02_townhall.png  
+deck/images/03_faction_symbols.png  
+deck/images/04_ui_mock_speech.png  
+deck/images/05_ui_mock_reaction.png  
+deck/images/06_pitch_cover.png  
+
+For each image, generate a 1280×720 PNG that simply displays its
+filename as large centered text on a neutral background (solid color or
+soft gradient). This keeps the repo lightweight while reserving slots
+for real concept art later.
 
 ## Acceptance Criteria
-- Playing `hello_world.twee` shows one of the eight reaction lines
-  beneath the faction‑reaction label.
+- All six `.png` files exist on **main** after merge.  
+- Each file opens and shows the correct filename text.  
+- No additional binary files or bloat added.
 
