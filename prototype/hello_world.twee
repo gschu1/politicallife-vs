@@ -1,0 +1,12 @@
+::Start
+What is your worldview? (Please enter your response)
+
+[[Submit -> Speech]]
+
+::Speech
+<textarea maxLength="60"></textarea>
+[[Continue -> Reaction]]
+
+::Reaction
+
+(Faction reaction: supportive / critical)
