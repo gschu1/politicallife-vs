@@ -1,19 +1,23 @@
+:: Start
+Welcome to the Political Life!
+
+[[Continue->Reaction]]
+
 :: Reaction
 
-(set: $reactions to (shuffle: (list:
-    "The Faction is pleased with your actions!"
-    "The Faction fully supports your decision!"
-    "The Faction is in agreement with your choices!"
-    "The Faction appreciates your efforts!"
-    "The Faction is unhappy with your decision."
-    "The Faction strongly criticizes your actions!"
-    "The Faction does not support your choices."
-    "The Faction disapproves of your efforts."
-)))
+{(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'prompts/reaction.yaml', false);
+    xhr.overrideMimeType('text/plain');
+    xhr.send();
 
-(display: (either: (get: $reactions)))
+    var lines = xhr.responseText.split('\n');
+    var supportiveLines = lines.filter(line => line.includes('supportive')).map(line => line.replace('supportive: ', ''));
+    var criticalLines = lines.filter(line => line.includes('critical')).map(line => line.replace('critical: ', ''));
+    var allLines = supportiveLines.concat(criticalLines);
 
+    // Randomly choose a line
+    var chosenLine = allLines[Math.floor(Math.random() * allLines.length)];
 
-:: Start
-
-(Faction reaction: (get: $reactions))
+    return 'Faction reaction: ' + chosenLine;
+})()}
