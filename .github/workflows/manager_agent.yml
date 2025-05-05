@@ -37,7 +37,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python - <<'PY'
-          import os, json, pathlib, sys, textwrap, openai
+          import os, json, pathlib, openai, base64, sys
 
           # --- 0. Keys & prompt -------------------------------------------------
           openai.api_key = os.environ["OPENAI_API_KEY"]
@@ -52,7 +52,7 @@ jobs:
                       "content": textwrap.dedent("""
                           You are an autonomous coding agent.
                           • Respond **ONLY** with valid JSON – an array of objects:
-                            [{"path": "<file>", "content": "<string>"}]
+                            "[{\"path\":\"file\",\"content_b64\":\"<BASE64>\"}]"
                           • Do NOT wrap in markdown, prose, or back‑ticks.
                       """).strip()
                   },
@@ -75,7 +75,9 @@ jobs:
           for obj in data:
               path = pathlib.Path(obj["path"])
               path.parent.mkdir(parents=True, exist_ok=True)
-              path.write_text(obj["content"])
+              decoded = base64.b64decode(f["content_b64"]).decode()
+              p.write_text(decoded)
+
 
           print(f"Wrote {len(data)} file(s).")
           PY
