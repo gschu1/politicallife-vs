@@ -37,7 +37,7 @@ jobs:
          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
        run: |
          python - <<'PY'
-         import os, json, base64, pathlib, openai, sys, textwrap
+         import textwrap, os, json, base64, pathlib, openai, sys
 
          openai.api_key = os.environ["OPENAI_API_KEY"]
          prompt = pathlib.Path("prompt.txt").read_text()
