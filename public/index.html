@@ -107,23 +107,17 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	<tw-storydata name="Untitled Story" startnode="1" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="3336B615-F642-40E2-B0A9-1E9CC7DE84DB" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="Start" tags="" position="25,25" size="100,100">Welcome to the Political Life!
 
 [[Continue-&gt;Reaction]]</tw-passagedata><tw-passagedata pid="2" name="Reaction" tags="" position="150,25" size="100,100">&lt;&lt;script&gt;&gt;
-var xhr = new XMLHttpRequest();
-xhr.open(&#39;GET&#39;, &#39;prompts/reaction.yaml&#39;, false);
-xhr.overrideMimeType(&#39;text/plain&#39;);
-xhr.send();
+var reactions = [
+  &quot;Faction reaction: Inspiring! We stand behind this vision.&quot;,
+  &quot;Faction reaction: Outrageous! This will never pass.&quot;
+];
 
-var lines = xhr.responseText.split(&#39;\n&#39;);
-var supportiveLines = lines.filter(line =&gt; line.includes(&#39;supportive&#39;)).map(line =&gt; line.replace(&#39;supportive: &#39;, &#39;&#39;));
-var criticalLines   = lines.filter(line =&gt; line.includes(&#39;critical&#39;)).map(line =&gt; line.replace(&#39;critical: &#39;, &#39;&#39;));
-var allLines = supportiveLines.concat(criticalLines);
-
-var chosenLine = allLines[Math.floor(Math.random() * allLines.length)];
-
-State.display(&quot;reactionOutput&quot;, { text: &quot;Faction reaction: &quot; + chosenLine });
+State.variables.chosen = reactions[
+  Math.floor(Math.random() * reactions.length)
+];
 &lt;&lt;/script&gt;&gt;
 
-:: reactionOutput[display]
-$passage.text
+&lt;&lt;print $chosen&gt;&gt;
 </tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
