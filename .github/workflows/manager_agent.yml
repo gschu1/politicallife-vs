@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write          # create / update files
   pull-requests: write     # open PRs
+  workflows: write       # allow touching *.yml inside .github/workflows
 
 jobs:
   manage:
