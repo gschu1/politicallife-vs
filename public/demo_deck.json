@@ -1,0 +1,26 @@
+[
+  {
+    "id": "coalition_intro",
+    "image": "assets/coalition_balance.png",
+    "caption": "Coalition balance at game start",
+    "choices": [
+      { "text": "Invite Green Party",  "next": "greens_join" },
+      { "text": "Court Nationalists", "next": "natl_join"    }
+    ],
+    "effects": { "liberal_score": 5, "conservative_score": -3 }
+  },
+  {
+    "id": "greens_join",
+    "image": "assets/greens.png",
+    "caption": "Greens join the coalition!",
+    "choices": [ { "text": "Continue", "next": "coalition_intro" } ],
+    "effects": { "liberal_score": 3 }
+  },
+  {
+    "id": "natl_join",
+    "image": "assets/nationalists.png",
+    "caption": "Nationalists join the coalition!",
+    "choices": [ { "text": "Continue", "next": "coalition_intro" } ],
+    "effects": { "conservative_score": 4 }
+  }
+]
