@@ -8,11 +8,19 @@ jobs:
   deploy-pages:
     runs-on: ubuntu-latest
     permissions:
-      pages: write
+      pages: write          # allow this job to publish
       id-token: write
     steps:
+      # 1 ▸ pull the repo
       - uses: actions/checkout@v4
+
+      # 2 ▸ NEW — registers GitHub Pages for this repo/run
+      - uses: actions/configure-pages@v4
+
+      # 3 ▸ upload everything in /public as the site artifact
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: public        # everything inside /public
+          path: public
+
+      # 4 ▸ publish the artifact
       - uses: actions/deploy-pages@v4
